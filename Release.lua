@@ -1,205 +1,131 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
+-- Release.lua: Universal Game Hack Configuration for Mod Menu UI
+-- For educational purposes only. Do not use in live Roblox games.
 
-local speedHackLoop = nil
-local advancedSpeedHackLoop = nil
-local antiFlipLoop = nil
-local currentSpeed = 16
-local maxSpeed = 32
-local accelerationRate = 2
-local decelerationRate = 4
-local airSpeedMultiplier = 1.5
-local directionalBoost = 1.2
+-- Clear existing elements to avoid conflicts
+for id, element in pairs(elements or {}) do
+    element:Destroy()
+end
+elements = {}
+elementCount = 0
 
--- Label para la sección de SpeedHack
-AddLabel("speedhack_section", "Sección SpeedHack", {
-    align = "Center",
+-- Game selection buttons
+local games = {
+    "Murder Mystery 2",
+    "Free Fire Max Roblox",
+    "Hide & Seek Extreme",
+    "Find the Button",
+    "Prop Hunt",
+    "Epic Minigames",
+    "Tower of Hell",
+    "Brookhaven 🏡 RP",
+    "Dress to Impress"
+}
+
+-- Add game selection buttons
+AddLabel("game_select_label", "Select a Game:")
+for i, game in ipairs(games) do
+    AddToggle("game_select_" .. i, game, function(state)
+        if state then
+            -- Clear previous hacks
+            for id, element in pairs(elements) do
+                if not id:match("^game_select_") and id ~= "game_select_label" and id ~= "disclaimer" then
+                    element:Destroy()
+                    elements[id] = nil
+                end
+            end
+            elementCount = #games + 2 -- Game buttons + label + disclaimer
+
+            -- Load game-specific hacks
+            if game == "Murder Mystery 2" then
+                AddToggle("mm2_esp", "Player ESP", function(state)
+                    addConsoleLog("MM2 Player ESP: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
+                end)
+                AddCheckbox("mm2_killall", "Kill All", function(state)
+                    addConsoleLog("MM2 Kill All: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
+                end)
+                AddTextbox("mm2_coins", "Coin Multiplier", "1", function(value)
+                    addConsoleLog("MM2 Coin Multiplier set to: " .. value, "info")
+                end)
+            elseif game == "Free Fire Max Roblox" then
+                AddToggle("ff_aim", "Aim Assist", function(state)
+                    addConsoleLog("FF Aim Assist: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
+                end)
+                AddToggle("ff_speed", "Speed Hack", function(state)
+                    addConsoleLog("FF Speed Hack: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
+                end)
+                AddCheckbox("ff_ammo", "Infinite Ammo", function(state)
+                    addConsoleLog("FF Infinite Ammo: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
+                end)
+            elseif game == "Hide & Seek Extreme" then
+                AddToggle("hs_reveal", "Reveal Hiders", function(state)
+                    addConsoleLog("HS Reveal Hiders: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
+                end)
+                AddCheckbox("hs_autoseek", "Auto-Seek", function(state)
+                    addConsoleLog("HS Auto-Seek: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
+                end)
+            elseif game == "Find the Button" then
+                AddToggle("ftb_esp", "Button ESP", function(state)
+                    addConsoleLog("FTB Button ESP: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
+                end)
+                AddCheckbox("ftb_autoclick", "Auto-Click Button", function(state)
+                    addConsoleLog("FTB Auto-Click: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
+                end)
+            elseif game == "Prop Hunt" then
+                AddToggle("ph_prop_esp", "Prop ESP", function(state)
+                    addConsoleLog("PH Prop ESP: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
+                end)
+                AddCheckbox("ph_invis", "Invisibility", function(state)
+                    addConsoleLog("PH Invisibility: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
+                end)
+            elseif game == "Epic Minigames" then
+                AddToggle("em_autowin", "Auto-Win Minigame", function(state)
+                    addConsoleLog("EM Auto-Win: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
+                end)
+                AddTextbox("em_score", "Score Multiplier", "1", function(value)
+                    addConsoleLog("EM Score Multiplier set to: " .. value, "info")
+                end)
+            elseif game == "Tower of Hell" then
+                AddToggle("toh_nofall", "No Fall Damage", function(state)
+                    addConsoleLog("ToH No Fall: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
+                end)
+                AddCheckbox("toh_autoclimb", "Auto-Climb", function(state)
+                    addConsoleLog("ToH Auto-Climb: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
+                end)
+            elseif game == "Brookhaven 🏡 RP" then
+                AddTextbox("bh_money", "Money Amount", "1000", function(value)
+                    addConsoleLog("BH Money set to: " .. value, "info")
+                end)
+                AddToggle("bh_unlock", "Unlock All Items", function(state)
+                    addConsoleLog("BH Unlock All: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
+                end)
+            elseif game == "Dress to Impress" then
+                AddCheckbox("dti_autostyle", "Auto-Style Outfit", function(state)
+                    addConsoleLog("DTI Auto-Style: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
+                end)
+                AddTextbox("dti_currency", "Currency Boost", "100", function(value)
+                    addConsoleLog("DTI Currency Boost set to: " .. value, "info")
+                end)
+            end
+            -- Disable other game toggles
+            for j, otherGame in ipairs(games) do
+                if i ~= j and elements["game_select_" .. j] then
+                    local toggle = elements["game_select_" .. j]:FindFirstChildOfClass("TextButton")
+                    if toggle then
+                        toggle:FindFirstChildOfClass("Frame"):FindFirstChildOfClass("Frame").Position = UDim2.new(0, 2, 0.5, -8)
+                        toggle:FindFirstChildOfClass("Frame").BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Add disclaimer
+AddText("disclaimer", "Disclaimer", "For educational purposes only. Do not use in live games.", {
+    color = Color3.fromRGB(255, 100, 100),
     font = "GothamBold",
-    size = 16,
-    color = Color3.fromRGB(100, 255, 150)
+    align = "Center",
+    size = 12
 })
 
--- Switch para activar/desactivar SpeedHack
-AddToggle("enable_speedhack", "Activar SpeedHack", function(state)
-    if state then
-        if not speedHackLoop then
-            speedHackLoop = RunService.Heartbeat:Connect(function()
-                local char = LocalPlayer.Character
-                if char and char:FindFirstChild("Humanoid") then
-                    char.Humanoid.WalkSpeed = currentSpeed
-                end
-            end)
-            addConsoleLog("SpeedHack: Activado", "success")
-        end
-    else
-        if speedHackLoop then
-            speedHackLoop:Disconnect()
-            speedHackLoop = nil
-            local char = LocalPlayer.Character
-            if char and char:FindFirstChild("Humanoid") then
-                char.Humanoid.WalkSpeed = 16
-            end
-            addConsoleLog("SpeedHack: Desactivado", "info")
-        end
-    end
-end)
-
--- Textbox para cambiar la velocidad
-AddTextbox("speed_velocity", "Cambiar Velocidad", "16", function(value)
-    local speed = tonumber(value)
-    if speed then
-        currentSpeed = speed
-        addConsoleLog("Velocidad cambiada a: " .. value, "info")
-    else
-        addConsoleLog("Valor de velocidad inválido: " .. value, "error")
-    end
-end)
-
--- Switch para No Fall (adaptado del código proporcionado)
-AddToggle("no_fall", "Sin Caída", function(state)
-    if state then
-        if not antiFlipLoop then
-            antiFlipLoop = RunService.Heartbeat:Connect(function()
-                local char = LocalPlayer.Character
-                if not char then return end
-                local humanoid = char:FindFirstChildWhichIsA("Humanoid")
-                local rootPart = char:FindFirstChild("HumanoidRootPart")
-                if humanoid and rootPart then
-                    humanoid.PlatformStand = false
-                    humanoid.Sit = false
-                    rootPart.CanCollide = true
-                    local cf = rootPart.CFrame
-                    local up = cf.UpVector
-                    local tilt = math.deg(math.acos(math.clamp(up:Dot(Vector3.new(0, 1, 0)), -1, 1)))
-                    local dir = Vector3.new(cf.LookVector.X, 0, cf.LookVector.Z).Unit
-                    local targetCF = CFrame.lookAt(cf.Position, cf.Position + dir)
-                    local lerpAlpha = tilt > 15 and 0.8 or (tilt > 5 and 0.5 or 0.3)
-                    rootPart.CFrame = cf:Lerp(targetCF, lerpAlpha)
-                    local av = rootPart.AssemblyAngularVelocity
-                    rootPart.AssemblyAngularVelocity = Vector3.new(0, av.Y * 0.2, 0)
-                    if humanoid:GetState() == Enum.HumanoidStateType.Physics or humanoid:GetState() == Enum.HumanoidStateType.PlatformStanding then
-                        humanoid:ChangeState(Enum.HumanoidStateType.Running)
-                    end
-                    local raycast = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))
-                    if raycast and raycast.Distance > 5 then
-                        local vel = rootPart.AssemblyLinearVelocity
-                        rootPart.AssemblyLinearVelocity = Vector3.new(vel.X, math.min(vel.Y, -10), vel.Z)
-                    end
-                end
-            end)
-            addConsoleLog("Sin Caída: Activado", "success")
-        end
-    else
-        if antiFlipLoop then
-            antiFlipLoop:Disconnect()
-            antiFlipLoop = nil
-            addConsoleLog("Sin Caída: Desactivado", "info")
-        end
-    end
-end)
-
--- Label para la sección avanzada
-AddLabel("advanced_section", "Sección Avanzada", {
-    align = "Center",
-    font = "GothamBold",
-    size = 16,
-    color = Color3.fromRGB(100, 255, 150)
-})
-
--- Switch para activar/desactivar SpeedHack Avanzado
-AddToggle("enable_advanced_speedhack", "Activar SpeedHack Avanzado", function(state)
-    if state then
-        if not advancedSpeedHackLoop then
-            advancedSpeedHackLoop = RunService.Heartbeat:Connect(function()
-                local char = LocalPlayer.Character
-                if not char or not char:FindFirstChild("Humanoid") or not char:FindFirstChild("HumanoidRootPart") then return end
-                local humanoid = char.Humanoid
-                local rootPart = char.HumanoidRootPart
-                local isMoving = humanoid.MoveDirection.Magnitude > 0
-                local isInAir = humanoid:GetState() == Enum.HumanoidStateType.Jumping or humanoid:GetState() == Enum.HumanoidStateType.Freefall
-                local camera = workspace.CurrentCamera
-                local lookDirection = camera.CFrame.LookVector
-                local moveDirection = humanoid.MoveDirection.Unit
-                local directionalFactor = isMoving and math.max(0, moveDirection:Dot(Vector3.new(lookDirection.X, 0, lookDirection.Z).Unit)) or 0
-                local targetSpeed = maxSpeed
-                if isInAir then
-                    targetSpeed = targetSpeed * airSpeedMultiplier
-                end
-                if directionalFactor > 0.5 then
-                    targetSpeed = targetSpeed * directionalBoost
-                end
-                local currentWalkSpeed = humanoid.WalkSpeed
-                local speedChange = isMoving and accelerationRate or -decelerationRate
-                local newSpeed = math.clamp(currentWalkSpeed + speedChange, 16, targetSpeed)
-                humanoid.WalkSpeed = newSpeed
-            end)
-            addConsoleLog("SpeedHack Avanzado: Activado", "success")
-        end
-    else
-        if advancedSpeedHackLoop then
-            advancedSpeedHackLoop:Disconnect()
-            advancedSpeedHackLoop = nil
-            local char = LocalPlayer.Character
-            if char and char:FindFirstChild("Humanoid") then
-                char.Humanoid.WalkSpeed = 16
-            end
-            addConsoleLog("SpeedHack Avanzado: Desactivado", "info")
-        end
-    end
-end)
-
--- Textbox para velocidad máxima
-AddTextbox("max_speed", "Velocidad Máxima", "32", function(value)
-    local speed = tonumber(value)
-    if speed then
-        maxSpeed = speed
-        addConsoleLog("Velocidad Máxima cambiada a: " .. value, "info")
-    else
-        addConsoleLog("Valor de Velocidad Máxima inválido: " .. value, "error")
-    end
-end)
-
--- Textbox para tasa de aceleración
-AddTextbox("acceleration_rate", "Tasa de Aceleración", "2", function(value)
-    local rate = tonumber(value)
-    if rate then
-        accelerationRate = rate
-        addConsoleLog("Tasa de Aceleración cambiada a: " .. value, "info")
-    else
-        addConsoleLog("Valor de Tasa de Aceleración inválido: " .. value, "error")
-    end
-end)
-
--- Textbox para tasa de desaceleración
-AddTextbox("deceleration_rate", "Tasa de Desaceleración", "4", function(value)
-    local rate = tonumber(value)
-    if rate then
-        decelerationRate = rate
-        addConsoleLog("Tasa de Desaceleración cambiada a: " .. value, "info")
-    else
-        addConsoleLog("Valor de Tasa de Desaceleración inválido: " .. value, "error")
-    end
-end)
-
--- Textbox para multiplicador de velocidad aérea
-AddTextbox("air_speed_multiplier", "Multiplicador Velocidad Aérea", "1.5", function(value)
-    local multiplier = tonumber(value)
-    if multiplier then
-        airSpeedMultiplier = multiplier
-        addConsoleLog("Multiplicador Velocidad Aérea cambiado a: " .. value, "info")
-    else
-        addConsoleLog("Valor de Multiplicador Velocidad Aérea inválido: " .. value, "error")
-    end
-end)
-
--- Textbox para aumento direccional
-AddTextbox("directional_boost", "Aumento Direccional", "1.2", function(value)
-    local boost = tonumber(value)
-    if boost then
-        directionalBoost = boost
-        addConsoleLog("Aumento Direccional cambiado a: " .. value, "info")
-    else
-        addConsoleLog("Valor de Aumento Direccional inválido: " .. value, "error")
-    end
-end)
+addConsoleLog("Game selection loaded successfully", "success")
