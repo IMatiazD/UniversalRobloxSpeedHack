@@ -1,3 +1,14 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Seguridad extra por si no está cargado el Character aún
+local function getHumanoid()
+    if not player.Character or not player.Character:FindFirstChild("Humanoid") then
+        player.CharacterAdded:Wait()
+    end
+    return player.Character:FindFirstChildOfClass("Humanoid")
+end
+
 AddText("welcomeMsg", "Welcome", "🎮 ¡Bienvenido al HackName Menu!", {
     color = Color3.fromRGB(0, 255, 150),
     style = "Bold",
@@ -8,7 +19,7 @@ AddText("welcomeMsg", "Welcome", "🎮 ¡Bienvenido al HackName Menu!", {
 })
 
 AddToggle("speedHack", "Speed Hack", function(enabled)
-    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+    local humanoid = getHumanoid()
     if humanoid then
         humanoid.WalkSpeed = enabled and 50 or 16
     end
@@ -16,7 +27,7 @@ end)
 
 AddTextbox("walkspeedInput", "Walk Speed", "16", function(text)
     local speed = tonumber(text) or 16
-    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+    local humanoid = getHumanoid()
     if humanoid then
         humanoid.WalkSpeed = speed
     end
