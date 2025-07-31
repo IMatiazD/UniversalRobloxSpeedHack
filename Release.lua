@@ -116,3 +116,4 @@ AddToggle("autoAcceptInfo", "Auto aceptar tutoriales o popups", function(state)
         end)
     end
 end)
+
