@@ -1,131 +1,118 @@
--- Release.lua: Universal Game Hack Configuration for Mod Menu UI
--- For educational purposes only. Do not use in live Roblox games.
+-- Información general
+AddLabel("title", "Dress to Impress Helper")
 
--- Clear existing elements to avoid conflicts
-for id, element in pairs(elements or {}) do
-    element:Destroy()
-end
-elements = {}
-elementCount = 0
+AddText("desc", "Bienvenido a tu GUI para Dress to Impress",
+    "Usá los toggles para canjear códigos oficiales o intentar resolver el código secreto del flamethrower automático.",
+    { color=Color3.fromRGB(255,255,255), style="Bold", size=16, align="Center", icon=true, font="GothamBold" }
+)
 
--- Game selection buttons
-local games = {
-    "Murder Mystery 2",
-    "Free Fire Max Roblox",
-    "Hide & Seek Extreme",
-    "Find the Button",
-    "Prop Hunt",
-    "Epic Minigames",
-    "Tower of Hell",
-    "Brookhaven 🏡 RP",
-    "Dress to Impress"
+-- Toggle: canjear todos los códigos activos conocidos
+local codes = {
+    "PIXIIUWU",
+    "1CON1CF4TMA",
+    "3NCHANTEDD1ZZY",
+    "ANGELT4NKED",
+    "ASHLEYBUNNI",
+    "B3APL4YS_D0L1E",
+    "BELALASLAY",
+    "C4LLMEHH4LEY",
+    "CH00P1E_1S_B4CK",
+    "D1ORST4R",
+    "ELLA",
+    "IBELLASLAY",
+    "ITSJUSTNICHOLAS",
+    "KITTYUUHH",
+    "KREEK",
+    "LABOOTS",
+    "LANA",
+    "LANABOW",
+    "LANATUTU",
+    "LEAHASHE",
+    "M3RM4ID",
+    "MEGANPLAYSBOOTS",
+    "S3M_0W3N_Y4Y",
+    "SUBM15CY",
+    "TEKKYOOZ",
+    "UMOYAE"
 }
 
--- Add game selection buttons
-AddLabel("game_select_label", "Select a Game:")
-for i, game in ipairs(games) do
-    AddToggle("game_select_" .. i, game, function(state)
-        if state then
-            -- Clear previous hacks
-            for id, element in pairs(elements) do
-                if not id:match("^game_select_") and id ~= "game_select_label" and id ~= "disclaimer" then
-                    element:Destroy()
-                    elements[id] = nil
-                end
-            end
-            elementCount = #games + 2 -- Game buttons + label + disclaimer
-
-            -- Load game-specific hacks
-            if game == "Murder Mystery 2" then
-                AddToggle("mm2_esp", "Player ESP", function(state)
-                    addConsoleLog("MM2 Player ESP: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
-                end)
-                AddCheckbox("mm2_killall", "Kill All", function(state)
-                    addConsoleLog("MM2 Kill All: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
-                end)
-                AddTextbox("mm2_coins", "Coin Multiplier", "1", function(value)
-                    addConsoleLog("MM2 Coin Multiplier set to: " .. value, "info")
-                end)
-            elseif game == "Free Fire Max Roblox" then
-                AddToggle("ff_aim", "Aim Assist", function(state)
-                    addConsoleLog("FF Aim Assist: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
-                end)
-                AddToggle("ff_speed", "Speed Hack", function(state)
-                    addConsoleLog("FF Speed Hack: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
-                end)
-                AddCheckbox("ff_ammo", "Infinite Ammo", function(state)
-                    addConsoleLog("FF Infinite Ammo: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
-                end)
-            elseif game == "Hide & Seek Extreme" then
-                AddToggle("hs_reveal", "Reveal Hiders", function(state)
-                    addConsoleLog("HS Reveal Hiders: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
-                end)
-                AddCheckbox("hs_autoseek", "Auto-Seek", function(state)
-                    addConsoleLog("HS Auto-Seek: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
-                end)
-            elseif game == "Find the Button" then
-                AddToggle("ftb_esp", "Button ESP", function(state)
-                    addConsoleLog("FTB Button ESP: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
-                end)
-                AddCheckbox("ftb_autoclick", "Auto-Click Button", function(state)
-                    addConsoleLog("FTB Auto-Click: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
-                end)
-            elseif game == "Prop Hunt" then
-                AddToggle("ph_prop_esp", "Prop ESP", function(state)
-                    addConsoleLog("PH Prop ESP: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
-                end)
-                AddCheckbox("ph_invis", "Invisibility", function(state)
-                    addConsoleLog("PH Invisibility: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
-                end)
-            elseif game == "Epic Minigames" then
-                AddToggle("em_autowin", "Auto-Win Minigame", function(state)
-                    addConsoleLog("EM Auto-Win: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
-                end)
-                AddTextbox("em_score", "Score Multiplier", "1", function(value)
-                    addConsoleLog("EM Score Multiplier set to: " .. value, "info")
-                end)
-            elseif game == "Tower of Hell" then
-                AddToggle("toh_nofall", "No Fall Damage", function(state)
-                    addConsoleLog("ToH No Fall: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
-                end)
-                AddCheckbox("toh_autoclimb", "Auto-Climb", function(state)
-                    addConsoleLog("ToH Auto-Climb: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
-                end)
-            elseif game == "Brookhaven 🏡 RP" then
-                AddTextbox("bh_money", "Money Amount", "1000", function(value)
-                    addConsoleLog("BH Money set to: " .. value, "info")
-                end)
-                AddToggle("bh_unlock", "Unlock All Items", function(state)
-                    addConsoleLog("BH Unlock All: " .. (state and "Enabled" or "Disabled"), state and "success" or "info")
-                end)
-            elseif game == "Dress to Impress" then
-                AddCheckbox("dti_autostyle", "Auto-Style Outfit", function(state)
-                    addConsoleLog("DTI Auto-Style: " .. (state and "Activated" or "Deactivated"), state and "success" or "info")
-                end)
-                AddTextbox("dti_currency", "Currency Boost", "100", function(value)
-                    addConsoleLog("DTI Currency Boost set to: " .. value, "info")
-                end)
-            end
-            -- Disable other game toggles
-            for j, otherGame in ipairs(games) do
-                if i ~= j and elements["game_select_" .. j] then
-                    local toggle = elements["game_select_" .. j]:FindFirstChildOfClass("TextButton")
-                    if toggle then
-                        toggle:FindFirstChildOfClass("Frame"):FindFirstChildOfClass("Frame").Position = UDim2.new(0, 2, 0.5, -8)
-                        toggle:FindFirstChildOfClass("Frame").BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-                    end
-                end
-            end
+AddToggle("redeemCodes", "Canjear códigos activos", function(state)
+    if state then
+        for _, code in ipairs(codes) do
+            game:GetService("ReplicatedStorage"):WaitForChild("Functions"):WaitForChild("RedeemCode"):InvokeServer(code)
+            wait(0.5)
         end
-    end)
-end
+        print("Códigos canjeados.")
+    end
+end)
 
--- Add disclaimer
-AddText("disclaimer", "Disclaimer", "For educational purposes only. Do not use in live games.", {
-    color = Color3.fromRGB(255, 100, 100),
-    font = "GothamBold",
-    align = "Center",
-    size = 12
-})
+-- Textbox para ingresar un código manual
+AddTextbox("manualCode", "Introducir código manual", "Escribí el código (todo en mayúscula)", function(value)
+    local code = string.upper(value:match("%S+")) -- limpia espacios
+    if #code > 0 then
+        game:GetService("ReplicatedStorage"):WaitForChild("Functions"):WaitForChild("RedeemCode"):InvokeServer(code)
+        print("Intentado código:", code)
+    end
+end)
 
-addConsoleLog("Game selection loaded successfully", "success")
+-- Checkbox: mostrar pistas automáticas para el código secreto del flamethrower
+AddCheckbox("hintSolver", "Mostrar pistas del código secreto", function(state)
+    if state then
+        -- Asumimos que hay un valor compartido con emojis y números
+        local info = game:GetService("ReplicatedStorage"):FindFirstChild("SecretCodeInfo")
+        if info then
+            print("Emoji‑Number Clues:")
+            for emoji, num in pairs(info:GetChildren()) do
+                print(emoji.Name, "=", num.Value)
+            end
+        else
+            print("No hay información de pistas disponible.")
+        end
+    else
+        print("Pistas ocultadas.")
+    end
+end)
+
+-- Coordenadas manuales (si necesitás teletransportarte o ubicar posiciones de emojis)
+local coords = Vector3.new(0,0,0)
+AddTextbox("coordX", "Coord X", "Ej: 100", function(v) coords = Vector3.new(tonumber(v) or coords.X, coords.Y, coords.Z) end)
+AddTextbox("coordY", "Coord Y", "Ej: 5", function(v) coords = Vector3.new(coords.X, tonumber(v) or coords.Y, coords.Z) end)
+AddTextbox("coordZ", "Coord Z", "Ej: -50", function(v) coords = Vector3.new(coords.X, coords.Y, tonumber(v) or coords.Z) end)
+
+AddToggle("teleportCoords", "Teleport a coordenadas", function(state)
+    if state then
+        local plr = game.Players.LocalPlayer
+        if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            plr.Character.HumanoidRootPart.CFrame = CFrame.new(coords)
+            print("Teletransporte a:", coords)
+        else
+            warn("No se pudo teletransportar: personaje no disponible.")
+        end
+    end
+end)
+
+-- Opciones adicionales útiles
+AddLabel("extras", "Extras disponibles")
+AddToggle("autoPickClothes", "Auto equipar ropa canjeada", function(state)
+    -- lógica de ejemplo: equipar último redeem
+    if state then
+        -- suponiendo que hay un evento que notifica items añadidos
+        game:GetService("Players").LocalPlayer.Backpack.ChildAdded:Connect(function(item)
+            item.Parent = game.Players.LocalPlayer.Character
+            print("Equipado:", item.Name)
+        end)
+    end
+end)
+
+AddToggle("autoAcceptInfo", "Auto aceptar tutoriales o popups", function(state)
+    if state then
+        -- cerrar ventanas emergentes automáticamente
+        local gui = game:GetService("Players").LocalPlayer.PlayerGui
+        gui.DescendantAdded:Connect(function(child)
+            if child:IsA("TextButton") and child.Text == "Aceptar" then
+                child:Activate()
+                print("Popup aceptado automáticamente.")
+            end
+        end)
+    end
+end)
